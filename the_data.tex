@@ -1,15 +1,53 @@
 \section{The Data}
 
+\textcolor{red}{!!!!!!!!TODO - add statistics about the data !!!!!!!!}
+
+Due to the nature of our research question we had to examine different gaming communities attitudes towards certain groups and therefore we chose certain games that we believe covers a broad spectrum of people.
+The games we chose to focus on are as follows: 
+\begin{enumerate}[noitemsep]
+    \item \textbf{\emph{Fortnite}} the leading game of the battle royale genre which considered to have a childish community.
+    
+    \item  \textbf{\emph{PUBG}} a game of the same genre as \emph{Fortnite} but holds a more mature crowd.
+    
+    \item  \textbf{\emph{Overwatch}} a team oriented shooter.
+    
+    \item  \textbf{\emph{World of Warcraft}} a Massively Multiplayer Online Role Playing Game (\emph{MMORPG}).
+    
+    \item  \textbf{\emph{Guild Wars2}} another MMORPG.
+    
+    \item  \textbf{\emph{Dota 2}} a Multiplayer Online Brawl Arena (\emph{MOBA}) successor to the first game in the genre.
+    
+    \item \textbf{\emph{League of Legends}} most iconic MOBA game.
+    
+    \item \textbf{\emph{Heroes of the Storm}} another MOBA game.
+    
+    \item \textbf{\emph{Hearthstone}} a digital collectible card game.
+    
+    \item \textbf{\emph{Bloodstained}} a game we chose since it was released during the period we collected data.
+    
+    \item \textbf{\emph{Fifa}} one of the two most popular and successful soccer games.
+    
+    \item \textbf{\emph{The Sims}} a life simulation game which considered to have female majority of players.
+    
+    \item \textbf{\emph{Minecraft}} open-world survival game with an emphasis on crafting.
+\end{enumerate} 
 
 
 \subsection{Data Collection}
-We wanted to collect as much data as we can and for that we choose the two most liberal platforms in regards to their data - \href{http://www.twitter.com}{Twitter} and \href{http://www.reddit.com}{Reddit}.
+\textcolor{red}{!!!!!!!!TODO - how much time did we collected it?!!!!!!!!}
+We wanted to collect as much data as we can and for that we chose the two most liberal platforms in regards to their data - \href{http://www.twitter.com}{Twitter} and \href{http://www.reddit.com}{Reddit}.
 
 \subsubsection{Twitter Listener}
-To listen to an ongoing stream of tweets in a way that will provide us with only the relevant data, in our case, these are tweets that mentions the games we are interested in following, we used the 
+We used the library \href{https://pypi.org/project/tweet-preprocessor/}{tweet-preprocessor} in order to listen to an ongoing stream of tweets in a way that will provide us with only the relevant data, in our case, the tweets that mention the games we are interested in following or tweets originating from profiles of interest like known games streamer and game profile pages.
 
 \subsubsection{Reddit Scraper}
-Julia
+Reddit is a social news platform split into communities called "subreddits", each covering a different topic.
+Reddit allows scraping data using the Python Reddit API Wrapper (PRAW) which granted us the opportunity to query data of our choice after concluding a manual search to choose the relevant subreddits. 
+% For each game in our list we found at least two subreddits that their main theme is the game .
+We found at least two subreddits per game with the game being their main theme and collected their data - topics, comments and replies, using PRAW.
 
 \subsection{Data Cleaning}
-Julia
+As we learned by ourselves, when collecting data from social networks, it tends to be noisy, incoherent, full with special characters, URLs and emojis.
+We wanted to apply the use of NLP based technologies that require clean and coherent data that resembles the natural use of language. To achieve that we first chose to use only data in the English language, then we removed emojis, emoticons, URLs, mentions, reserved twitter words(retweets) and all the characters excluded from the Roman alphabet. We also made sure to remove all the duplicate posts we got from retweets. Further more, we removed stop words in order to train embedding models and bag of words. 
+
+Following the clean-up we examined the remaining data and concluded that for 3 out of 13 games (Guild Wars 2, Hearthstone and Heroes of the Storm) it was insufficient so we decided to discard those from our research. 

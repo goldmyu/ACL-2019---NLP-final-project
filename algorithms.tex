@@ -1,32 +1,60 @@
 \section{Algorithms}
-Once we finished collecting and pre-processing the data, we thought about the different ways in which we can extract the required insights from it, thus we used to following NLP tools.
+Once we finished collecting and pre-processing the data, we decided to use the following NLP tools to extract the required insights from it.
 
 
 \subsection{Bag of Words - Term frequency}
-We applied a Bag of Words model to determine the frequent appearance of terms in a "document" , in our case a document would be considered an entire game's data-set as we wish to compare the different games. We count the number of times every word appears in that game's entire data-set (both from twitter and Reddit combined). This has provided us with a simple metric to determine the use of certain words of interest in a community. These words of interest are divided into two groups of \emph{Neutral Sentiment Words} and \emph{Negative Sentiment Words} for each of the 3 terms we measure - \emph{Sexism}, \emph{Racism} and \emph{Trump-hate}.
-
-
-\textcolor{red}{TODO - add lists of words here?!?!?}
-
-\subsection{Word Embedding}
-
+We applied a Bag of Words model to determine the frequency of appearance of terms in a "document". In our case, a document would be considered a game's entire data-set (both from twitter and Reddit combined), as we wish to compare the different games. 
+We used term-frequency to assess our words of interest which are divided into two groups for each of the 3 terms we measure (\emph{Sexism}, \emph{Racism} and \emph{Trump-hate}): \emph{Neutral Sentiment Words} and \emph{Negative Sentiment Words}. These lists of words can be viewed in the appendix \ref{appendix:wordslists}.
 
 \subsection{Sentiment Analysis}
-Sentiment Analysis \cite{liu2012sentiment} is a type of data mining, also known as opinion mining, that measures the inclination of people’s opinions through natural language processing (NLP), computational linguistics and text analysis. These methods used to extract and analyze subjective information from different sources like Twitter and Reddit in our case. 
+Sentiment Analysis \cite{liu2012sentiment} is a type of data mining, also known as opinion mining, that measures the inclination of people’s opinions and expressed emotions. 
+We used the \href{https://textblob.readthedocs.io/en/dev/}{TextBlob} library to perform sentiment analysis on our data. 
+For any given post this resulted in a tuple of scores - \{polarity, subjectivity\}. 
+The \emph{polarity} score is a float of value [-1.0, 1.0]. 
+A Negative score represents negative emotion and a positive score represents positive emotion. \emph{Subjectivity} score was disregarded as we consider all posts to be subjective, being that they represent the writer's opinion.
+
+%We calculated the polarity score for every post in each game's community then divided the results into 3 groups: Positive, Neutral and Negative polarity scores. We calculated the positive and negative polarity averages for each game and the general polarity average for all posts in a game's community, in order to see if the overall sentiment of that community is optimistic or not.
 
 
-We used in TextBlob library for sentiment analysis which return a tuple of form (polarity, subjectivity). The \emph{polarity} score is a float within the range [-1.0, 1.0] and it presents emotional state. Negative score represent negative emotional, 0 score represent neutral emotional and positive score represent positive emotional. The \emph{subjectivity} score is a float within the range [0.0, 1.0] and it describe if the post is subjective or objective,  where 0.0 is very objective and 1.0 is very subjective.
-% Subjective sentence expresses some personal feelings, views, or beliefs. 
+\subsection{Word Embedding}
+We used a word embedding model \cite{mikolov2013distributed} in our research as we needed to map each word in our vocabulary into a vector that will represent the semantic meaning of that word in the context of a certain game's community.
+For that, we used the \href{https://radimrehurek.com/gensim/models/word2vec.html}{gensim} library Word2Vec implementation.
 
-In our work we calculated polarity and subjectivity for every post in a specific community. We divided the results into three groups: Positive, Neutral and Negative polarity score. We calculate polarity average for each group, except for the neutral group whose average is known (0). Additionally, we calculate generally polarity average for all the posts in the community.
+We wanted to use this technology as we believed it will help us model the relation of each game's community to our area of interest. We had a predefined set of vector word arithmetics that we calculated for each game and this in turn helped us test each community's relation towards women, minority groups and politics, specifically Trump.
+One interesting example to test the sexism in a community was $Man \rightarrow Woman$ like $Gamer \rightarrow  [ ? ] $
+where we expected results like GamerGirl, eGirl, etc where the community was equality promoting.
+
+
+\subsection{Negativity Evaluation Metric}
+NEM is a novel metric we devised in-order to give an empirical evaluation to a certain community property. In our case these properties are sexism, racism and Trump-hate.
+This metric is calculated for every property as follows:
+
+\begin{multline*} 
+     NEM_{property} = \alpha*X_{term-freq} + \beta*X_{sentiment} \\ 
+     + \gamma*X_{embedding}
+\end{multline*}
+
+For example $NEM_{Racism}$ will return a value of [0,1], where 1 will mean the community is extremely racist and 0 the opposite.
+In order to calculate a NEM for each property, we need to calculate the 3 inner terms it's defined by. For that we need to define 2 sets of words for each property - \emph{Neutral Words} and \emph{Negative Words}, e.g. a set of \emph{Neutral Words} for the Sexism property are words that describe women in a neutral sentiment like the following - [\emph{woman, girl, she, her, ...}] and a set of \emph{Negative Words} such as - [\emph{bitch, whore, slut, hag ,...}]. Those sets of words were defined by us and can be observed in the appendix \ref{appendix:wordslists}.
+\vspace{1mm}
+
+Using the pre-defined sets of words we can calculate each of the following terms that construct the calculation of each $NEM_{property}$.
+\vspace{1mm}
+
+\begin{enumerate}
+    \item $X_{term-freq}= \frac{\#NegativePosts}{TotalNumberOfPosts}$\\\\
+    Where $NegativePosts$ are the posts containing one or more words from the \emph{Negative Words} set for a given property (Racism, Sexism, Trump-hate).
+
+    \item$X_{sentiment}=Avg_{Polatriy}[NeutralPosts]$\\\\
+     Where $NeutralPosts$ are the posts containing one or more words from the \emph{Neutral Words} set for a given property. As we wish to evaluate how negative is the sentiment in posts concerning our topics.
+    
+    \item $X_{embedding}=$\\\\ $\frac{1}{N}\sum_{n=1}^{N}
+    \frac{\#MostSimilarNegativeWords}{\#MostSimilarWords}$\\\\
+    Where $\#MostSimilarNegativeWords$ are the total number of \emph{Negative Words} that appeared in the Most-similar results for a given neutral word in the trained embedding model per game. And N represents the number of \emph{Neutral Words}.
+    
+\end{enumerate}
 
 
 \subsection{Topic Modeling}
-\textcolor{red}{TODO - review this}Topic-Modeling \cite{wallach2006topic} is the process of identifying topics in a set of documents. This can be useful for search engines, customer service automation, and any other instance where knowing the topics of documents is important. In our experiment we tried to get new information about the uniqe categories of each game and compare between the communities in each game hope to find difference, we ran topic model (unsupervised clustering) on every game and found categories with sexism and racism, .
-% \begin{figure}[h]
-% \includegraphics[width=0.5\textwidth]{Images/topicModel.PNG}
-% \caption{\textcolor{red}{TODO - review this} The x-axis shows interesting categories that received high score (axis Y), for example we can see that fifa are sexist and cursing, on the other hand fortnite get the highest score on streaming category}
-% \end{figure}
+Topic-Modeling \cite{wallach2006topic} is an unsupervised model that is used to perform clustering of topics in a set of documents. We experimented with it using our data, in-order to find the categories of interest for each community, nonetheless it is not incorporated into our negativity evaluation metric as we received insignificant results when applying it.
 
-\subsection{Negativity Evaluation Metric}
- 
